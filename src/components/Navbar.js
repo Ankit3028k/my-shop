@@ -22,6 +22,22 @@ const Navbar = () => {
                 >
                     {isMobileMenuOpen ? '✖' : '☰'}
                 </button>
+                
+                {/* Desktop Links */}
+                <div className="hidden md:flex space-x-4">
+                    <Link to="/" className="text-white hover:text-gray-300 transition duration-300">
+                        Home
+                    </Link>
+                    <Link to="/categories" className="text-white hover:text-gray-300 transition duration-300">
+                        Categories
+                    </Link>
+                    <Link to="/products" className="text-white hover:text-gray-300 transition duration-300">
+                        Products
+                    </Link>
+                    <Link to="/cart" className="text-white hover:text-gray-300 transition duration-300">
+                        Cart
+                    </Link>
+                </div>
             </div>
 
             {/* Sidebar for mobile view */}
