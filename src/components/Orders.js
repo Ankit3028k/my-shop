@@ -19,7 +19,7 @@ const Orders = () => {
         doc.text(`City: ${order.city}`, 10, 30);
         doc.text(`Status: ${order.status}`, 10, 40);
         doc.text(`Phone No: ${order.phone}`, 10, 50);
-        doc.text(`Total Price: $${order.totalPrice?.toFixed(2) || '0.00'}`, 10, 60);
+        doc.text(`Total Price: ${order.totalPrice?.toFixed(2) || '0.00'} Rs.`, 10, 60);
         doc.text(`Shipping Address: ${order.shippingAddress1}, ${order.city}, ${order.country}`, 10, 70);
 
         doc.setFontSize(16);
@@ -27,7 +27,7 @@ const Orders = () => {
         if (Array.isArray(order.orderItems) && order.orderItems.length > 0) {
             order.orderItems.forEach((item, index) => {
                 doc.setFontSize(12);
-                doc.text(`${index + 1}. Product: ${item.product?.name || 'Unknown'}, Quantity: ${item.quantity}, Price: $${item.product?.price?.toFixed(2) || '0.00'}`, 10, 100 + index * 10);
+                doc.text(`${index + 1}. Product: ${item.product?.name || 'Unknown'}, Quantity: ${item.quantity}, Price: ${item.product?.price?.toFixed(2) || '0.00'} Rs.`, 10, 100 + index * 10);
             });
         } else {
             doc.text('No products available for this order.', 10, 100);
