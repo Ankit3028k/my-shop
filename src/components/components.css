@@ -1,0 +1,56 @@
+/* src/components/Banner.css */
+.banner {
+    margin-top: 0; /* Remove top margin if necessary */
+}
+
+/* src/components/Navbar.css */
+nav {
+    transition: background-color 0.3s ease;
+}
+
+nav:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 2px solid transparent;
+    border-radius: 25px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 200px; /* Adjust width as needed */
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #63b3ed; /* Tailwind blue-400 */
+    box-shadow: 0 0 0 2px rgba(99, 184, 237, 0.5);
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.search-input:not(:placeholder-shown) {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* Mobile menu styles */
+.fixed {
+    position: fixed;
+}
+
+.bg-gray-800 {
+    background-color: rgba(31, 41, 55, 0.75); /* Tailwind gray-800 */
+}
+
+.bg-white {
+    background-color: white;
+}
