@@ -1,5 +1,6 @@
 // src/components/ProductList.js
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom'; // Use useLocation for query params
 import axiosInstance from '../axiosConfig';
 import { useCart } from '../context/CartContext';
 import { ToastContainer, toast } from 'react-toastify';
@@ -9,8 +10,12 @@ const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
     const { addToCart } = useCart(); // Use global cart management
+    const location = useLocation(); // Access query parameters
+
+    // Extract the search term from query params
+    const searchParams = new URLSearchParams(location.search);
+    const searchTerm = searchParams.get('search') || ''; // Default to empty string if no search term
 
     // Fetch products from the API
     const fetchProducts = async () => {
@@ -36,10 +41,14 @@ const ProductList = () => {
         toast.success(`${product.name} added to cart!`, { autoClose: 2000 }); // Display toast notification
     };
 
-    // Filter products based on search term
-    const filteredProducts = products.filter(product =>
-        product.name && product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filter products based on search term (name or price)
+    const filteredProducts = products.filter(product => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+            (product.name && product.name.toLowerCase().includes(searchLower)) ||
+            (product.price && product.price.toString().includes(searchLower)) // Search by price
+        );
+    });
 
     // Handle loading and errors
     if (loading) {
@@ -51,36 +60,27 @@ const ProductList = () => {
     }
 
     return (
-        <div className="p-6 max-w-2xl mx-auto">
+        <div className="p-6 max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-4">Product List</h2>
-            <input
-                type="text"
-                placeholder="Search Products"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="border border-gray-300 p-3 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 w-full"
-            />
-            <ul className="mt-6 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filteredProducts.length === 0 ? (
-                    <li className="text-center text-gray-500">No products found.</li>
+                    <div className="text-center text-gray-500 col-span-full">No products found.</div>
                 ) : (
                     filteredProducts.map(product => (
-                        <li 
+                        <div 
                             key={product.id} 
-                            className="py-3 px-4 border border-gray-200 rounded-md shadow hover:bg-gray-100 transition duration-300 flex items-center justify-between"
+                            className="border border-gray-200 rounded-md shadow p-4 hover:bg-gray-100 transition duration-300 flex flex-col"
                         >
-                            <div className="flex items-center">
-                                {/* Image Section */}
+                            <Link to={`/product/${product.id}`} className="flex-grow flex items-center">
                                 <img 
                                     src={product.image} 
                                     alt={product.name} 
                                     className="w-16 h-16 object-cover rounded-md mr-4" 
                                 />
                                 <div>
-                                    <span className="text-lg font-medium">{product.name}</span>
+                                    <h3 className="text-lg font-medium">{product.name}</h3>
                                     <span className="text-lg font-medium"> ₹{product.price}</span>
                                     <div>
-                                        {/* Correct Stock Check */}
                                         {product.countInStock > 0 ? (
                                             <span className="text-sm text-gray-600">In Stock: {product.countInStock}</span>
                                         ) : (
@@ -88,25 +88,22 @@ const ProductList = () => {
                                         )}
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                {/* Add to Cart Button */}
-                                <button
-                                    onClick={() => handleAddToCart(product)} // Trigger handleAddToCart
-                                    disabled={product.countInStock === 0}
-                                    className={`px-4 py-2 rounded-md text-white font-semibold ${
-                                        product.countInStock > 0
-                                            ? 'bg-blue-600 hover:bg-blue-700'
-                                            : 'bg-gray-400 cursor-not-allowed'
-                                    }`}
-                                >
-                                    {product.countInStock > 0 ? 'Add to Cart' : 'Out of Stock'}
-                                </button>
-                            </div>
-                        </li>
+                            </Link>
+                            <button
+                                onClick={() => handleAddToCart(product)} // Trigger handleAddToCart
+                                disabled={product.countInStock === 0}
+                                className={`mt-2 px-4 py-2 rounded-md text-white font-semibold ${
+                                    product.countInStock > 0
+                                        ? 'bg-blue-600 hover:bg-blue-700'
+                                        : 'bg-gray-400 cursor-not-allowed'
+                                }`}
+                            >
+                                {product.countInStock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                            </button>
+                        </div>
                     ))
                 )}
-            </ul>
+            </div>
 
             {/* Toast notification container */}
             <ToastContainer />
