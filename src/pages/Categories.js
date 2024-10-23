@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../axiosConfig'; // Make sure this is correctly configured
 import ProductList from '../components/ProductList';
+import Navbar from '../components/Navbar';
 
 
 const Categories = () => {
@@ -30,6 +31,7 @@ const Categories = () => {
 
     return (
         <div className="container mx-auto px-4 md:px-8 lg:px-16 py-8">
+            <Navbar/>
             <h1 className="text-3xl font-bold text-center my-6">Categories</h1>
 
             {/* Show loading or error */}
