@@ -61,7 +61,7 @@ const ProductList = () => {
 
     return (
         <div className="p-6 max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-4">Product List</h2>
+            // <h2 className="text-3xl font-bold text-center mb-4">Product List</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filteredProducts.length === 0 ? (
                     <div className="text-center text-gray-500 col-span-full">No products found.</div>
