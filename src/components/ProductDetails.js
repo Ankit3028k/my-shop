@@ -42,7 +42,7 @@ const ProductDetails = () => {
     };
 
     return (
-        <div className="p-10 bg-gray-50 min-h-screen">
+        <div className=" bg-gray-50 min-h-screen">
             {loading && <p>Loading product details...</p>}
             <Navbar/>
             {error && <p className="text-red-500">{error}</p>}
