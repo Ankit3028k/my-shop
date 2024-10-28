@@ -53,6 +53,7 @@ const AdminProductList = ({ products, fetchProducts, setEditProduct }) => {
                         <th className="p-2">Price</th>
                         <th className="p-2">Category</th>
                         <th className="p-2">Stock</th>
+                        <th className="p-2">Discount</th>
                         {/* <th className="p-2">Featured</th> */}
                         <th className="p-2">Actions</th>
                     </tr>
@@ -67,6 +68,7 @@ const AdminProductList = ({ products, fetchProducts, setEditProduct }) => {
                             <td className="p-2">${product.price}</td>
                             <td className="p-2">{product.category?.name || 'No Category'}</td>
                             <td className="p-2">{product.countInStock}</td>
+                            <td className="p-2">{product.discounted_price}</td>
                             <td className="p-2">
                                 {/* <input
                                     type="checkbox"
