@@ -6,13 +6,16 @@ const AdminProductForm = ({ editProduct, fetchProducts }) => {
         name: '',
         description: '',
         price: 0,
+        discounted_price: 0,
         category: '',
         brand: '',
         countInStock: 0,
+        quantity_threshold: 0,
         image: null,
-        isFeature: false, // Added isFeature in the state
+        isFeatured: false,
     });
 
+    const [categories, setCategories] = useState([]);
     const [imageFile, setImageFile] = useState(null);
 
     useEffect(() => {
@@ -24,11 +27,13 @@ const AdminProductForm = ({ editProduct, fetchProducts }) => {
                         name: data.name,
                         description: data.description,
                         price: data.price,
+                        discounted_price: data.discounted_price || 0,
                         category: data.category,
                         brand: data.brand,
                         countInStock: data.countInStock,
+                        quantity_threshold: data.quantity_threshold || 0,
                         image: data.image,
-                        isFeature: data.isFeature || false, // Set the isFeature value from the product data
+                        isFeatured: data.isFeatured || false,
                     });
                 } catch (error) {
                     console.error('Error fetching product details:', error);
@@ -38,9 +43,24 @@ const AdminProductForm = ({ editProduct, fetchProducts }) => {
         }
     }, [editProduct]);
 
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const { data } = await axiosInstance.get('/categories');
+                setCategories(data);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormProduct((prev) => ({ ...prev, [name]: value }));
+        setFormProduct((prev) => ({
+            ...prev,
+            [name]: ['price', 'discounted_price', 'countInStock', 'quantity_threshold'].includes(name) ? parseFloat(value) : value,
+        }));
     };
 
     const handleFileChange = (e) => {
@@ -48,139 +68,73 @@ const AdminProductForm = ({ editProduct, fetchProducts }) => {
     };
 
     const handleFeatureChange = (e) => {
-        const value = e.target.value === 'true'; // Convert string to boolean
-        setFormProduct((prev) => ({ ...prev, isFeature: value }));
+        setFormProduct((prev) => ({ ...prev, isFeatured: e.target.value === 'true' }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitting:', formProduct); // Debug log to see the current form state
         try {
             const formData = new FormData();
-            formData.append('name', formProduct.name);
-            formData.append('description', formProduct.description);
-            formData.append('price', formProduct.price);
-            formData.append('category', formProduct.category);
-            formData.append('brand', formProduct.brand);
-            formData.append('countInStock', formProduct.countInStock);
-            formData.append('isFeature', formProduct.isFeature.toString()); // Convert boolean to string
+            Object.entries(formProduct).forEach(([key, value]) => {
+                formData.append(key, value);
+            });
             if (imageFile) formData.append('image', imageFile);
-
-            // Log FormData content
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
-            }
 
             if (editProduct) {
                 await axiosInstance.put(`/products/${editProduct}`, formData);
             } else {
                 await axiosInstance.post('/products', formData);
             }
+
             fetchProducts();
-            setFormProduct({
-                name: '',
-                description: '',
-                price: 0,
-                category: '',
-                brand: '',
-                countInStock: 0,
-                image: null,
-                isFeature: false, // Reset to initial state
-            });
-            setImageFile(null);
+            resetForm();
         } catch (error) {
             console.error('Error saving product:', error);
         }
     };
 
+    const resetForm = () => {
+        setFormProduct({
+            name: '',
+            description: '',
+            brand: '',
+            price: 0,
+            discounted_price: 0,
+            quantity_threshold: 0,
+            category: '',
+            countInStock: 0,
+            image: null,
+            isFeatured: false,
+        });
+        setImageFile(null);
+    };
+
     return (
         <form className="space-y-4 p-4 border border-gray-300 rounded shadow-lg" onSubmit={handleSubmit}>
             <h2 className="text-2xl font-semibold">{editProduct ? 'Edit Product' : 'Add Product'}</h2>
-            <input
-                type="text"
-                name="name"
-                placeholder="Product Name"
-                value={formProduct.name}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-            />
-            <textarea
-                name="description"
-                placeholder="Description"
-                value={formProduct.description}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-            />
-            <input
-                type="number"
-                name="price"
-                placeholder="Price"
-                value={formProduct.price}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-            />
-            <input
-                type="text"
-                name="category"
-                placeholder="Category"
-                value={formProduct.category}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-            />
-            <input
-                type="text"
-                name="brand"
-                placeholder="Brand"
-                value={formProduct.brand}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-            />
-            <input
-                type="number"
-                name="countInStock"
-                placeholder="Count in Stock"
-                value={formProduct.countInStock}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-            />
-            <input
-                type="file"
-                name="image"
-                onChange={handleFileChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required={!editProduct}
-            />
+            <input type="text" name="name" placeholder="Product Name" value={formProduct.name} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" required />
+            <textarea name="description" placeholder="Description" value={formProduct.description} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
+            <input type="text" name="brand" placeholder="Brand" value={formProduct.brand} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" required />
+            <input type="number" name="price" placeholder="Price" value={formProduct.price} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" required />
+            <input type="number" name="discounted_price" placeholder="Discounted Price" value={formProduct.discounted_price} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
+            <input type="number" name="quantity_threshold" placeholder="Quantity Threshold" value={formProduct.quantity_threshold} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
+            <select name="category" value={formProduct.category} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" required>
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                ))}
+            </select>
+            <input type="number" name="countInStock" placeholder="Count in Stock" value={formProduct.countInStock} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" required />
+            <input type="file" name="image" onChange={handleFileChange} className="w-full p-2 border border-gray-300 rounded" required={!editProduct} />
 
-            {/* Radio buttons for isFeature */}
             <div>
                 <label className="block text-lg font-medium">Is Featured?</label>
                 <div className="flex items-center space-x-4">
                     <label>
-                        <input
-                            type="radio"
-                            name="isFeature"
-                            value="true"
-                            checked={formProduct.isFeature === true}
-                            onChange={handleFeatureChange}
-                            className="mr-2"
-                        />
-                        Yes
+                        <input type="radio" name="isFeatured" value="true" checked={formProduct.isFeatured === true} onChange={handleFeatureChange} className="mr-2" /> Yes
                     </label>
                     <label>
-                        <input
-                            type="radio"
-                            name="isFeature"
-                            value="false"
-                            checked={formProduct.isFeature === false}
-                            onChange={handleFeatureChange}
-                            className="mr-2"
-                        />
-                        No
+                        <input type="radio" name="isFeatured" value="false" checked={formProduct.isFeatured === false} onChange={handleFeatureChange} className="mr-2" /> No
                     </label>
                 </div>
             </div>
