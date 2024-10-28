@@ -15,7 +15,7 @@ const Cart = () => {
                     <ul>
                         {cart.map(item => (
                             <li key={item._id} className="flex justify-between mb-4">
-                                <span>{item.name} x {item.quantity}</span>
+                                <span>{item.name} {item.price} x {item.quantity}</span>
                                 <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                                 <button onClick={() => removeFromCart(item._id)} className="text-red-500">Remove</button>
                             </li>
