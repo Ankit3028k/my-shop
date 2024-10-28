@@ -1,4 +1,3 @@
-// src/context/CartContext.js
 import React, { createContext, useContext, useState } from 'react';
 import axios from 'axios';
 
@@ -19,19 +18,28 @@ export const CartProvider = ({ children }) => {
         phone: ''
     });
 
+    // New pickupDetails state
+    const [pickupDetails, setPickupDetails] = useState({
+        customerName: '',
+        storeLocation: '',
+        pickupTime: '',
+        phone: ''
+    });
+
     const addToCart = (product) => {
         const existingProduct = cart.find(item => item._id === product._id);
+    
         if (existingProduct) {
             setCart(cart.map(item =>
                 item._id === product._id
-                    ? { ...item, quantity: item.quantity + 1 }
+                    ? { ...item, quantity: item.quantity + product.quantity } // Increment by selected quantity
                     : item
             ));
         } else {
-            setCart([...cart, { ...product, quantity: 1 }]);
+            setCart([...cart, { ...product }]); // Add product with the selected quantity
         }
     };
-
+    
     const removeFromCart = (productId) => {
         setCart((prevCart) => prevCart.filter(item => item._id !== productId));
     };
@@ -48,13 +56,20 @@ export const CartProvider = ({ children }) => {
         return true;
     };
 
+    const calculateTotalPrice = () => {
+        return cart.reduce((total, item) => {
+            const pricePerItem = item.quantity >= item.quantity_threshold ? item.discounted_price : item.price;
+            return total + pricePerItem * item.quantity; // Accumulate the total
+        }, 0);
+    };
+
     const placeOrder = async () => {
         if (!validateShippingDetails()) {
             alert('Please fill in all required shipping details.');
             return;
         }
 
-        const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+        const totalPrice = calculateTotalPrice(); // Recalculate total price for the order
 
         const orderData = {
             orderItems: cart.map(item => ({
@@ -72,7 +87,7 @@ export const CartProvider = ({ children }) => {
         };
 
         try {
-            await axios.post('https://personal-shop-backend.onrender.com/api/v1/orders', orderData, {
+            await axios.post('http://localhost:3001/api/v1/orders', orderData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -92,10 +107,12 @@ export const CartProvider = ({ children }) => {
             addToCart,
             removeFromCart,
             clearCart,
-            totalPrice: cart.reduce((total, item) => total + item.price * item.quantity, 0),
+            totalPrice: calculateTotalPrice(), // Ensure this uses the updated logic
             placeOrder,
             shippingDetails,
-            setShippingDetails // Provide method to update shipping details
+            setShippingDetails, // Provide method to update shipping details
+            pickupDetails, // Provide pickupDetails
+            setPickupDetails // Provide method to update pickup details
         }}>
             {children}
         </CartContext.Provider>
