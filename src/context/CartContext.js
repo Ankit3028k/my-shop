@@ -87,7 +87,7 @@ export const CartProvider = ({ children }) => {
         };
 
         try {
-            await axios.post('http://localhost:3001/api/v1/orders', orderData, {
+            await axios.post('https://personal-shop-backend.onrender.com/api/v1/orders', orderData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
