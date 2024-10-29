@@ -30,7 +30,7 @@ const Categories = () => {
     }, []);
 
     return (
-        <div className="container mx-auto px-4 md:px-8 lg:px-16 py-8">
+        <div className="">
             <Navbar/>
             <h1 className="text-3xl font-bold text-center my-6">Categories</h1>
 
