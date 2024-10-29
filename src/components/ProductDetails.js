@@ -1,15 +1,22 @@
 // src/pages/ProductDetails.js
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom'; 
 import axios from '../axiosConfig';
-import { motion } from 'framer-motion'; // Import Framer Motion for animations
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { useCart } from '../context/CartContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const ProductDetails = () => {
-    const { id } = useParams(); // Get the product ID from the URL
+    const { id } = useParams();
     const [product, setProduct] = useState(null);
+    const [relatedProducts, setRelatedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { addToCart } = useCart();
+    const [quantities, setQuantities] = useState({});
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -17,6 +24,12 @@ const ProductDetails = () => {
                 const response = await axios.get(`/products/${id}`);
                 setProduct(response.data);
                 setError(null);
+                
+                const relatedResponse = await axios.get(`/products?category=${response.data.category.id}`);
+                const filteredProducts = relatedResponse.data.filter(
+                    (item) => item.category._id === response.data.category._id && item._id !== id
+                );
+                setRelatedProducts(filteredProducts);
             } catch (error) {
                 setError('Error fetching product details');
                 console.error('Error fetching product:', error);
@@ -27,7 +40,31 @@ const ProductDetails = () => {
         fetchProductDetails();
     }, [id]);
 
-    // Animation variants
+    const handleQuantityChange = (productId, quantity) => {
+        setQuantities((prevQuantities) => ({
+            ...prevQuantities,
+            [productId]: quantity,
+        }));
+    };
+
+    const handleAddToCart = (product) => {
+        const quantity = quantities[product._id] || 1;
+
+        let finalPrice = product.price;
+        if (quantity >= product.quantity_threshold) {
+            finalPrice = product.discounted_price;
+        }
+
+        const productToAdd = {
+            ...product,
+            quantity,
+            price: finalPrice,
+        };
+
+        addToCart(productToAdd);
+        toast.success(`${product.name} added to cart with quantity ${quantity}!`, { autoClose: 2000 });
+    };
+
     const containerVariants = {
         hidden: { opacity: 0, x: '-100vw' },
         visible: {
@@ -42,9 +79,9 @@ const ProductDetails = () => {
     };
 
     return (
-        <div className=" bg-gray-50 min-h-screen">
+        <div className="bg-gray-50 min-h-screen">
+            <Navbar />
             {loading && <p>Loading product details...</p>}
-            <Navbar/>
             {error && <p className="text-red-500">{error}</p>}
             {product && (
                 <motion.div
@@ -89,7 +126,7 @@ const ProductDetails = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1, transition: { delay: 0.4 } }}
                         >
-                            ₹{product.price} 
+                            ₹{product.price}
                             {product.discount && (
                                 <span className="ml-2 text-red-600 line-through">
                                     ₹{product.originalPrice}
@@ -114,24 +151,53 @@ const ProductDetails = () => {
                             {product.description}
                         </motion.p>
 
-                        {/* Specifications Section */}
+                        {/* Quantity Selector */}
+                        <input
+                            type="number"
+                            min="1"
+                            value={quantities[product._id] || 1}
+                            onChange={(e) => handleQuantityChange(product._id, parseInt(e.target.value))}
+                            className="border rounded px-2 py-1 w-20"
+                        />
+
+                        <button
+                            onClick={() => handleAddToCart(product)}
+                            className="bg-blue-500 text-white py-2 px-4 rounded mt-4"
+                        >
+                            Add to Cart
+                        </button>
+
                         <div className="border-t pt-4">
                             <p className="text-gray-800 font-semibold">Brand: {product.brand}</p>
                             <p className="text-gray-800 font-semibold">Category: {product.category?.name || 'No Category'}</p>
                             <p className="text-gray-800 font-semibold">Stock: {product.countInStock}</p>
-                            {/* <p className="text-gray-800 font-semibold">Veg/Non-Veg: {product.veg ? 'Vegetarian' : 'Non-Veg'}</p> */}
                         </div>
-
-                        {/* Action Buttons */}
-                        {/* <div className="mt-6">
-                            <button className="w-full py-3 bg-blue-500 text-white rounded-md font-bold hover:bg-blue-600 transition">
-                                Login to Buy
-                            </button>
-                        </div> */}
                     </div>
                 </motion.div>
             )}
-            <Footer/>
+
+            {/* Related Products Section */}
+            {relatedProducts.length > 0 && (
+                <div className="mt-10">
+                    <h2 className="text-2xl font-bold mb-4">Related Products</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {relatedProducts.map((relatedProduct) => (
+                            <Link key={relatedProduct._id} to={`/product/${relatedProduct._id}`} className="bg-white shadow rounded p-4">
+                                <img
+                                    src={relatedProduct.image}
+                                    alt={relatedProduct.name}
+                                    className="w-full h-40 object-cover rounded mb-2"
+                                />
+                                <h3 className="text-lg font-semibold">{relatedProduct.name}</h3>
+                                <p className="text-gray-700">₹{relatedProduct.price}</p>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <Footer />
+            <ToastContainer />
         </div>
     );
 };
