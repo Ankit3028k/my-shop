@@ -111,7 +111,7 @@ const ProductList = () => {
     );
 };
 
-// export default ProductList;
+export default ProductList;
 // import React, { useState, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 // import axiosInstance from '../axiosConfig';
