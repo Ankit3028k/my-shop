@@ -11,7 +11,7 @@ const banners = [
         button2Text: 'Learn More',
     },
     {
-        image: 'https://via.placeholder.com/1200x400?text=Sale+Banner+2',
+        image: 'https://res.cloudinary.com/dtezcrxpw/image/upload/c_scale,h_615,w_1858/samples/food/spices.jpg',
         title: 'Special Offer!',
         description: 'Get free shipping on all orders.',
         button1Text: 'Shop Now',
