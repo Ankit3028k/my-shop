@@ -30,7 +30,7 @@ const Navbar = () => {
         <nav className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 shadow-lg sticky top-0 z-50 transition duration-300">
             <div className="container mx-auto flex justify-between items-center">
                 <Link to="/" className="text-white text-2xl font-bold tracking-wide hover:text-gray-300 transition duration-300">
-                    E-Shop
+                    Ankit Gangrade Kirana
                 </Link>
 
                 <div className="hidden md:flex space-x-4">
