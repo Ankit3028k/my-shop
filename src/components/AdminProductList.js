@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import axiosInstance from '../axiosConfig';
 
 const AdminProductList = ({ products, fetchProducts, setEditProduct }) => {
-    const [modifiedProducts, setModifiedProducts] = useState({}); // Local state to track modified products
+    const [loading, setLoading] = useState(false);
+    const [modifiedProducts, setModifiedProducts] = useState({});
 
     const handleDelete = async (productId) => {
+        setLoading(true);
         try {
             await axiosInstance.delete(`/products/${productId}`, {
                 headers: {
@@ -14,37 +16,34 @@ const AdminProductList = ({ products, fetchProducts, setEditProduct }) => {
             fetchProducts();
         } catch (error) {
             console.error('Error deleting product:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    // const handleFeaturedToggle = (product) => {
-    //     setModifiedProducts((prev) => ({
-    //         ...prev,
-    //         [product._id]: !product.featured, // Toggle the featured status
-    //     }));
-    // };
+    const handleFeaturedToggle = async (product) => {
+        const newFeaturedStatus = !product.isFeatured;
+        setModifiedProducts((prev) => ({
+            ...prev,
+            [product._id]: newFeaturedStatus,
+        }));
 
-    // const handleSaveChanges = async (productId) => {
-    //     const featuredStatus = modifiedProducts[productId] !== undefined ? modifiedProducts[productId] : null;
-
-    //     if (featuredStatus !== false) { // Only send request if there's a change
-    //         try {
-    //             await axiosInstance.put(`/products/${productId}`, { featured: featuredStatus }, {
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //             });
-    //             fetchProducts(); // Refresh the product list after saving
-    //             setModifiedProducts((prev) => ({ ...prev, [productId]: undefined })); // Clear the modified state for that product
-    //         } catch (error) {
-    //             console.error('Error saving changes:', error);
-    //         }
-    //     }
-    // };
+        try {
+            await axiosInstance.put(`/products/${product._id}`, { featured: newFeaturedStatus }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            fetchProducts();
+        } catch (error) {
+            console.error('Error updating featured status:', error);
+        }
+    };
 
     return (
         <div className="overflow-x-auto">
             <h2 className="text-2xl font-bold mb-4">Admin Product List</h2>
+            {loading && <div>Loading...</div>}
             <table className="min-w-full bg-white border border-gray-300">
                 <thead className="bg-gray-100">
                     <tr>
@@ -53,8 +52,7 @@ const AdminProductList = ({ products, fetchProducts, setEditProduct }) => {
                         <th className="p-2">Price</th>
                         <th className="p-2">Category</th>
                         <th className="p-2">Stock</th>
-                        <th className="p-2">Discount</th>
-                        {/* <th className="p-2">Featured</th> */}
+                        <th className="p-2">Featured</th>
                         <th className="p-2">Actions</th>
                     </tr>
                 </thead>
@@ -68,13 +66,12 @@ const AdminProductList = ({ products, fetchProducts, setEditProduct }) => {
                             <td className="p-2">${product.price}</td>
                             <td className="p-2">{product.category?.name || 'No Category'}</td>
                             <td className="p-2">{product.countInStock}</td>
-                            <td className="p-2">{product.discounted_price}</td>
                             <td className="p-2">
-                                {/* <input
+                                <input
                                     type="checkbox"
-                                    checked={modifiedProducts[product._id] !== undefined ? modifiedProducts[product._id] : product.featured}
+                                    checked={modifiedProducts[product._id] !== undefined ? modifiedProducts[product._id] : product.isFeatured}
                                     onChange={() => handleFeaturedToggle(product)}
-                                /> */}
+                                />
                             </td>
                             <td className="p-2 space-x-2">
                                 <button
@@ -89,12 +86,6 @@ const AdminProductList = ({ products, fetchProducts, setEditProduct }) => {
                                 >
                                     Delete
                                 </button>
-                                {/* <button
-                                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-400"
-                                    onClick={() => handleSaveChanges(product._id)} // Save changes for this product
-                                >
-                                    Save Changes
-                                </button> */}
                             </td>
                         </tr>
                     ))}
