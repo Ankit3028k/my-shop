@@ -3,11 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch, FaHome, FaThList, FaShoppingCart, FaBars, FaTimes } from 'react-icons/fa'; 
 import { GiShoppingBag } from 'react-icons/gi'; 
 import './components.css'; // Ensure the path is correct
-
+import { useCart } from '../context/CartContext';
 const Navbar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [isSearchVisible, setIsSearchVisible] = useState(false);
+
+    // Use the cart context to get the cart and its length
+    const { cart } = useCart(); // Cart state from context
+    const cartCount = cart.length; // Number of items in the cart
+
     const navigate = useNavigate();
 
     const toggleMobileMenu = () => {
@@ -30,7 +35,7 @@ const Navbar = () => {
         <nav className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 shadow-lg sticky top-0 z-50 transition duration-300">
             <div className="container mx-auto flex justify-between items-center">
                 <Link to="/" className="text-white text-2xl font-bold tracking-wide hover:text-gray-300 transition duration-300">
-                    Ankit Gangrade Kirana
+                    E-Shop
                 </Link>
 
                 <div className="hidden md:flex space-x-4">
@@ -43,8 +48,14 @@ const Navbar = () => {
                     <Link to="/products" className="text-white flex items-center hover:text-gray-300 transition duration-300">
                         <GiShoppingBag className="mr-1" /> Products
                     </Link>
-                    <Link to="/cart" className="text-white flex items-center hover:text-gray-300 transition duration-300">
-                        <FaShoppingCart className="mr-1" /> Cart
+                    <Link to="/cart" className="relative text-white flex items-center hover:text-gray-300 transition duration-300">
+                        <FaShoppingCart className="mr-1" />
+                        {/* Show the badge only when cartCount > 0 */}
+                        {cartCount > 0 && (
+                            <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                {cartCount}
+                            </span>
+                        )}
                     </Link>
                 </div>
 
@@ -92,6 +103,12 @@ const Navbar = () => {
                         </Link>
                         <Link to="/cart" className="block text-gray-700 flex items-center hover:text-blue-600 transition duration-300 p-2" onClick={toggleMobileMenu}>
                             <FaShoppingCart className="mr-1" /> Cart
+                            {/* Show the badge only when cartCount > 0 */}
+                            {cartCount > 0 && (
+                                <span className="ml-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                    {cartCount}
+                                </span>
+                            )}
                         </Link>
                     </div>
                 </div>
@@ -101,4 +118,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
- 
