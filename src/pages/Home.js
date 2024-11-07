@@ -24,7 +24,7 @@ const Home = () => {
                     onChange={(e) => setSearchTerm(e.target.value)} 
                 /> */}
                 <CategoryList setSelectedCategory={setSelectedCategory} />
-                <ProductList category={selectedCategory} searchTerm={searchTerm} /> {/* Pass searchTerm here */}
+                {/* <ProductList category={selectedCategory} searchTerm={searchTerm} /> Pass searchTerm here */}
                 <FeaturedProducts />
             </div>
             <Banner index={1} />
