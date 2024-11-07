@@ -17,6 +17,7 @@ const AdminProductForm = ({ editProduct, fetchProducts }) => {
 
     const [categories, setCategories] = useState([]);
     const [imageFile, setImageFile] = useState(null);
+    const [isEditing, setIsEditing] = useState(!!editProduct); // To track if we are in edit mode or add mode
 
     useEffect(() => {
         if (editProduct) {
@@ -109,9 +110,14 @@ const AdminProductForm = ({ editProduct, fetchProducts }) => {
         setImageFile(null);
     };
 
+    const handleSwitchMode = () => {
+        setIsEditing((prev) => !prev);
+        resetForm(); // Reset the form when switching modes
+    };
+
     return (
         <form className="space-y-4 p-4 border border-gray-300 rounded shadow-lg" onSubmit={handleSubmit}>
-            <h2 className="text-2xl font-semibold">{editProduct ? 'Edit Product' : 'Add Product'}</h2>
+            <h2 className="text-2xl font-semibold">{isEditing ? 'Edit Product' : 'Add Product'}</h2>
             <input type="text" name="name" placeholder="Product Name" value={formProduct.name} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" required />
             <textarea name="description" placeholder="Description" value={formProduct.description} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
             <input type="text" name="brand" placeholder="Brand" value={formProduct.brand} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" required />
@@ -125,7 +131,7 @@ const AdminProductForm = ({ editProduct, fetchProducts }) => {
                 ))}
             </select>
             <input type="number" name="countInStock" placeholder="Count in Stock" value={formProduct.countInStock} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" required />
-            <input type="file" name="image" onChange={handleFileChange} className="w-full p-2 border border-gray-300 rounded" required={!editProduct} />
+            <input type="file" name="image" onChange={handleFileChange} className="w-full p-2 border border-gray-300 rounded" required={!isEditing} />
 
             <div>
                 <label className="block text-lg font-medium">Is Featured?</label>
@@ -139,9 +145,18 @@ const AdminProductForm = ({ editProduct, fetchProducts }) => {
                 </div>
             </div>
 
-            <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-500">
-                {editProduct ? 'Update Product' : 'Add Product'}
-            </button>
+            <div className="flex space-x-4">
+                <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-500">
+                    {isEditing ? 'Update Product' : 'Add Product'}
+                </button>
+                <button
+                    type="button"
+                    onClick={handleSwitchMode}
+                    className="w-full bg-gray-600 text-white p-2 rounded hover:bg-gray-500"
+                >
+                    {isEditing ? 'Switch to Add Product' : 'Switch to Edit Product'}
+                </button>
+            </div>
         </form>
     );
 };
