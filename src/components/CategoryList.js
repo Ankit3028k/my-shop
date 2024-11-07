@@ -106,6 +106,7 @@ const CategoryList = ({ setSelectedCategory }) => {
                         </div>
                         ))}
                     </ul>
+                            <ToastContainer />
                 </div>
             ) : (
                 <p className="mt-4 text-gray-500">No products available for the selected category.</p>
