@@ -1,7 +1,7 @@
 // src/api.js
 import axios from 'axios';
 
-const API_URL = 'https://personal-shop-backend.vercel.app/api/v1'; // Update based on your backend URL
+const API_URL = 'https://personal-shop-backend.onrender.com/api/v1'; // Update based on your backend URL
 
 export const fetchCategories = () => {
     return axios.get(`${API_URL}/categories`);
