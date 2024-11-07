@@ -46,9 +46,9 @@ const Footer = () => {
                         <p className="text-sm leading-relaxed text-gray-300">
                             Support Number: <a href="tel:+918959305284" className="text-blue-400 hover:text-blue-300 transition duration-300">+91 89593 05284</a>
                         </p>
-                        <p className="text-sm leading-relaxed text-gray-300 mt-2">
+                        {/* <p className="text-sm leading-relaxed text-gray-300 mt-2">
                             Email: <a href="mailto:support@eshop.com" className="text-blue-400 hover:text-blue-300 transition duration-300">support@eshop.com</a>
-                        </p>
+                        </p> */}
                     </div>
                     <Newsletter />
                 </div>
@@ -88,11 +88,11 @@ const Footer = () => {
             {/* Copyright */}
             <div className="text-center mt-12">
                 <p className="text-sm text-gray-400">
-                    &copy; {new Date().getFullYear()} E-Shop. All Rights Reserved.
+                    &copy; {new Date().getFullYear()} <a href='https://ankit3028k.vercel.app' target='_blank'>Ankit Gangrade.</a> All Rights Reserved.
                 </p>
             </div>
         </footer>
     );
 };
-
+ 
 export default Footer;
