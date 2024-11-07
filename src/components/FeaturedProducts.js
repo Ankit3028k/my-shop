@@ -104,6 +104,7 @@ const FeaturedProducts = () => {
                                     ))
                                 )}
                             </ul>
+                                <ToastContainer />
                         </div>
                     )}
                 </>
