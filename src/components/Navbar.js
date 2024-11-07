@@ -35,9 +35,17 @@ const Navbar = () => {
         <nav className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 shadow-lg sticky top-0 z-50 transition duration-300">
             <div className="container mx-auto flex justify-between items-center">
                 <Link to="/" className="text-white text-2xl font-bold tracking-wide hover:text-gray-300 transition duration-300">
-                    E-Shop
+                    Ankit Gangrade Kirana
                 </Link>
-
+ <Link to="/cart" className="relative text-white flex items-center hover:text-gray-300 transition duration-300">
+                        <FaShoppingCart className="mr-1" />
+                        {/* Show the badge only when cartCount > 0 */}
+                        {cartCount > 0 && (
+                            <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                {cartCount}
+                            </span>
+                        )}
+                    </Link>
                 <div className="hidden md:flex space-x-4">
                     <Link to="/" className="text-white flex items-center hover:text-gray-300 transition duration-300">
                         <FaHome className="mr-1" /> Home
@@ -48,15 +56,7 @@ const Navbar = () => {
                     <Link to="/products" className="text-white flex items-center hover:text-gray-300 transition duration-300">
                         <GiShoppingBag className="mr-1" /> Products
                     </Link>
-                    <Link to="/cart" className="relative text-white flex items-center hover:text-gray-300 transition duration-300">
-                        <FaShoppingCart className="mr-1" />
-                        {/* Show the badge only when cartCount > 0 */}
-                        {cartCount > 0 && (
-                            <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                {cartCount}
-                            </span>
-                        )}
-                    </Link>
+                   
                 </div>
 
                 <div className="relative">
