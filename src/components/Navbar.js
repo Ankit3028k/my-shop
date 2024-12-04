@@ -44,7 +44,7 @@ const Navbar = () => {
                             <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                 {cartCount}
                             </span>
-                        )}
+                        )}Cart
                     </Link>
                 <div className="hidden md:flex space-x-4">
                     <Link to="/" className="text-white flex items-center hover:text-gray-300 transition duration-300">
